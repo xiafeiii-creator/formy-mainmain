@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>For သဲသဲ ❤</title>
+  <style>
+    :root{
+      --bg1:#0b1020; --bg2:#1a0f2e;
+      --card: rgba(255,255,255,.08);
+      --line: rgba(255,255,255,.14);
+      --text:#f6f0ff; --muted: rgba(246,240,255,.75);
+      --accent:#ff4d8d; --accent2:#7c5cff;
+      --good:#27e1a1;
+      --shadow: 0 20px 70px rgba(0,0,0,.5);
+      --r: 20px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Myanmar", "Myanmar Text", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; font-family:var(--sans); color:var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(255,77,141,.20), transparent 60%),
+        radial-gradient(800px 600px at 90% 20%, rgba(124,92,255,.18), transparent 55%),
+        radial-gradient(900px 700px at 40% 95%, rgba(39,225,161,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    /* ✅ Background hearts layer (smaller + lower opacity) */
+    canvas#bgHearts{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.25;            /* ~ 1/3 lower than before */
+      filter: blur(1.4px);    /* a bit softer */
+    }
+
+    /* ✅ Front hearts burst layer */
+    canvas#fx{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:2;
+      opacity:.9;
+    }
+
+    .wrap{max-width:980px; margin:0 auto; padding:22px 16px 40px; position:relative; z-index:3;}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:14px 14px;
+      position:sticky; top:0; backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(11,16,32,.70), rgba(11,16,32,.10));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      z-index:5;
+    }
+    .brand{display:flex; flex-direction:column; gap:2px;}
+    .brand .title{font-size:16px; letter-spacing:.3px; font-weight:700}
+    .brand .sub{font-size:12px; color:var(--muted)}
+    .grid{
+      display:grid; gap:14px;
+      grid-template-columns: 1.15fr .85fr;
+      margin-top:16px;
+    }
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} header{position:relative} }
+    .card{
+      background: var(--card);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .card .hd h2{margin:0; font-size:16px}
+    .card .hd p{margin:6px 0 0; font-size:13px; color:var(--muted); line-height:1.5}
+    .card .bd{padding:16px}
+    .hero{
+      padding:20px 18px 18px;
+      position:relative;
+      background:
+        radial-gradient(500px 240px at 20% 15%, rgba(255,77,141,.20), transparent 60%),
+        radial-gradient(520px 280px at 90% 25%, rgba(124,92,255,.18), transparent 58%),
+        rgba(255,255,255,.02);
+    }
+    .hero h1{margin:0; font-size:26px; line-height:1.15}
+    .hero .meta{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px}
+    .tag{
+      font-size:12px; color:var(--muted);
+      padding:8px 10px; border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+    button{
+      border:0; outline:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-family:var(--sans);
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s transform, .15s opacity;
+    }
+    button:active{transform:scale(.98)}
+    .btn-primary{
+      background: linear-gradient(135deg, var(--accent), #ff7ab1);
+      color:#140812;
+      box-shadow: 0 12px 40px rgba(255,77,141,.25);
+    }
+    .btn-ghost{
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .note{
+      display:flex; gap:12px; align-items:flex-start;
+      padding:14px 14px;
+      border-radius:16px;
+      background: rgba(0,0,0,.15);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .note .icon{
+      width:38px; height:38px; border-radius:14px;
+      display:grid; place-items:center;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:18px;
+    }
+    .note h3{margin:0; font-size:14px}
+    .note p{margin:6px 0 0; font-size:13px; color:var(--muted); line-height:1.55}
+    .list{display:grid; gap:10px;}
+    .item{
+      padding:12px 12px;
+      border-radius:16px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex; justify-content:space-between; gap:10px; align-items:center;
+    }
+    .item .t{display:flex; flex-direction:column; gap:3px}
+    .item b{font-size:13px}
+    .item small{color:var(--muted); font-size:12px}
+
+    /* ✅ chip text wrap (no cut) */
+    .chip{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:14px;
+      background: rgba(39,225,161,.10);
+      color: rgba(246,240,255,.95);
+      border:1px solid rgba(39,225,161,.25);
+
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      max-width: 70vw;
+      line-height: 1.45;
+    }
+
+    .bigText{
+      font-size:15px; line-height:1.75; color:rgba(246,240,255,.92);
+      padding:14px 14px; border-radius:18px;
+      background: rgba(255,255,255,.05);
+      border:1px dashed rgba(255,255,255,.18);
+    }
+    .footer{
+      margin-top:18px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      color:var(--muted); font-size:12px;
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0; display:none;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      z-index:50;
+      padding:18px;
+    }
+    .overlay.show{display:grid; place-items:center}
+    .modal{
+      width:min(720px, 100%);
+      border-radius:22px;
+      background: rgba(18,10,34,.72);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 30px 100px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modal .top{
+      padding:14px 14px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .x{
+      width:42px; height:42px; border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-size:18px;
+    }
+    .modal .content{padding:16px}
+    .hint{margin-top:10px; color:var(--muted); font-size:12px; line-height:1.5}
+  </style>
+</head>
+
+<body>
+  <!-- ✅ BACKGROUND HEARTS -->
+  <canvas id="bgHearts"></canvas>
+
+  <!-- ✅ FRONT FX HEARTS -->
+  <canvas id="fx"></canvas>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="title" id="appTitle">For သဲသဲ ❤</div>
+        <div class="sub" id="appSub">ကိုကိုက သဲသဲအတွက် သီးသန့်လုပ်ထားတဲ့စာမျက်နှာလေး</div>
+      </div>
+    </header>
+
+    <div class="card hero">
+      <h1 id="headline">သဲသဲအတွက်ပဲ… 💗</h1>
+      <div class="meta">
+        <div class="tag" id="toTag">To: <b>သဲသဲ</b></div>
+        <div class="tag" id="fromTag">From: <b>ကိုကို</b></div>
+        <div class="tag" id="sinceTag">Since: <b id="sinceText">2026-01-01</b></div>
+      </div>
+      <div class="btns">
+        <button class="btn-primary" id="openLetter">💌 Love Letter</button>
+        <button class="btn-ghost" id="surpriseBtn">🎁 Surprise</button>
+        <button class="btn-ghost" id="musicBtn">🎵 Music</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="hd">
+          <div>
+            <h2>Our Little Story</h2>
+            <p>အချိန်ကို တိုင်းတာထားပြီး… နေ့တိုင်း စာလေးတွေ/အကြောင်းလေးတွေ ပြောင်းလဲနေမယ်။</p>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="list">
+            <div class="item">
+              <div class="t">
+                <b>Time together</b>
+                <small>2026-01-01 ကိုကိုတို့ရဲ့ anni💕</small>
+              </div>
+              <div class="chip" id="timer">—</div>
+            </div>
+
+            <div class="item">
+              <div class="t">
+                <b>Today’s reason I love you</b>
+                <small>တစ်နေ့တစ်ခု လာမှာနော်အချစ်ကလေး</small>
+              </div>
+              <div class="chip" id="reason">—</div>
+            </div>
+
+            <div class="item">
+              <div class="t">
+                <b>Our next date idea</b>
+                <small>တစ်နေ့တစ်ခု လာမှာနော်အချစ်ကလေး</small>
+              </div>
+              <div class="chip" id="dateIdea">—</div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="bigText" id="dailyMessage">—</div>
+
+          <div class="footer">
+            <div>💗 Today content က နေ့တိုင်း ပြောင်းတယ်နော်ချစ်ဆုံးလေး(7-day loop)</div>
+            <div id="dayHint">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd">
+          <div>
+            <h2>Sweet Buttons</h2>
+            <p>သဲသဲက ခလုတ်လေးတွေကိုနှိပ်တာနဲ့ surprise လေးတွေ တက်လာမယ်။</p>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="note">
+            <div class="icon">💞</div>
+            <div>
+              <h3 id="miniTitle">သဲသဲကိုချစ်တဲ့အကြောင်းက အများကြီး…</h3>
+              <p id="miniBody">ဒါပေမယ့် အချို့ကိုတော့ ဒီ app လေးထဲမှာပဲ ထားမယ်။</p>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="list">
+            <div class="item">
+              <div class="t">
+                <b>Tap for a compliment</b>
+                <small>random praise</small>
+              </div>
+              <button class="btn-ghost" id="complimentBtn">✨</button>
+            </div>
+            <div class="item">
+              <div class="t">
+                <b>Tap for a promise</b>
+                <small>soft & loyal</small>
+              </div>
+              <button class="btn-ghost" id="promiseBtn">🤝</button>
+            </div>
+            <div class="item">
+              <div class="t">
+                <b>Tap for a secret</b>
+                <small>only for သဲသဲ</small>
+              </div>
+              <button class="btn-ghost" id="secretBtn">🔒</button>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="bigText" id="toast" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Welcome Modal -->
+  <div class="overlay" id="welcomeOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="top">
+        <div>
+          <b style="font-size:14px">💗 သဲသဲရေ…</b>
+          <div style="color:var(--muted); font-size:12px; margin-top:4px">
+            ကိုကိုက သဲသဲအတွက် သီးသန့်လုပ်ထားတဲ့စာမျက်နှာလေး
+          </div>
+        </div>
+        <div class="x" id="closeWelcome">✕</div>
+      </div>
+      <div class="content">
+        <div class="bigText" id="welcomeText">
+          သဲသဲ… ဒီစာမျက်နှာလေးထဲမှာ ကိုကို့အချစ်တွေ တိတ်တိတ်လေး သိမ်းထားတယ်။<br>
+          “ဖတ်မယ် ❤” ကိုနှိပ်ရင် သီချင်းလေးနဲ့အတူ “ဒီနေ့စာ” ကို ဖတ်လို့ရမယ်နော်။
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn-primary" id="welcomeStart">ဖတ်မယ် ❤</button>
+          <button class="btn-ghost" id="welcomeNoMusic">မဖွင့်ဘဲ ဝင်မယ်</button>
+        </div>
+        <div class="hint">Note: autoplay ပိတ်ထားလို့ ခလုတ်နှိပ်မှ သီချင်းစပါမယ်။</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Letter Modal -->
+  <div class="overlay" id="letterOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="top">
+        <div>
+          <b style="font-size:14px">💌 Love Letter</b>
+          <div style="color:var(--muted); font-size:12px; margin-top:4px" id="letterSub">ဒီနေ့စာလေး</div>
+        </div>
+        <div class="x" id="closeLetter">✕</div>
+      </div>
+      <div class="content">
+        <div class="bigText" id="letterText"></div>
+        <div class="hint">ဒီစာလေးက နေ့တိုင်း auto ပြောင်းပါတယ် 💗</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ BGM -->
+  <audio id="bgm" preload="auto" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const ANNI = "2026-01-01";
+    const TO = "သဲသဲ";
+    const FROM = "ကိုကို";
+    const $ = (id)=>document.getElementById(id);
+
+    const DAILY_MESSAGES = [
+`သဲသဲရေ…
+ဒီနေ့လည်း သဲသဲ‌လေးက နူးနူးညံ့ညံ့ လှပနေပါစေ။
+ကိုကိုက သဲသဲကို ဘယ်တော့မှအချစ်မလျော့ပဲ အမြဲချစ်နေမယ်။`,
+`သဲသဲရေ…
+ဒီနေ့ သဲသဲအပြုံးလေးတစ်ချက်ကြောင့် ကိုကို့နေ့က ပိုအဓိပ္ပာယ်ရှိသွားတယ်။
+အချိန်တွေကသာ ပြောင်းသွားပေမယ့် ကိုကို့ချစ်တာက မပြောင်းဘူး။`,
+`သဲသဲရေ…
+ပင်ပန်းတဲ့နေ့ဖြစ်ရင် သဲသဲစိတ်ကို အရင်ပဲ ဖက်ထားလိုက်ပါ။
+ကိုကိုက အကွာအဝေးမရှိတဲ့နေရာကနေ ဂရုစိုက်နေတယ်။`,
+`သဲသဲရေ…
+သဲသဲက ကိုကို့အတွက် “အိမ်” လိုပဲ။
+သဲသဲရှိတဲ့နေရာက ကိုကို့စိတ်အေးစေတယ်။`,
+`သဲသဲရေ…
+သဲသဲအတွက် ကောင်းကင်ကလည်း တိတ်တိတ်လေး လှနေမယ်ထင်တယ်။
+ကိုကိုက သဲသဲကို မမနေ့ကထက် ဒီနေ့ပိုချစ်တယ်။`,
+`သဲသဲရေ…
+စကားလုံးတွေထက် ကိုကို့ရင်ထဲက အမှန်တရားတစ်ခုရှိတယ်—
+“သဲသဲကို အကြာကြီးချစ်မယ်”`,
+`သဲသဲရေ…
+ဒီနေ့လည်း သဲသဲက ကိုကို့အတွက် အရေးအကြီးဆုံးပဲ။
+သဲသဲရဲ့နေ့ကို ကိုကိုအမြဲဆုတောင်းပေးနေမယ်။`
+    ];
+
+    const LOVE_LETTERS = [
+`သဲသဲရေ…
+2026-01-01 က စပြီး ကိုကိုတို့အတွက် “အစစ်အမှန်” အမှတ်တရနေ့တစ်နေ့ ဖြစ်သွားခဲ့တယ်နော်။
+အဲဒီနေ့ကစလို့ သဲသဲနဲ့ကိုကို့ကြားမှာ မမြင်ရပေမယ့် ချည်ထားတဲ့ကြိုးတစ်ချောင်းရှိနေတယ်။
+
+ကိုကိုက သဲသဲကို ချစ်တာက စကားတစ်ခုပဲမဟုတ်ဘူး—
+နေ့တိုင်း ဂရုစိုက်ချင်တဲ့ စိတ်နဲ့…
+သဲသဲရယ်တဲ့အခါ ကိုကိုပါပျော်သွားတဲ့ အလေ့အကျင့်နဲ့…
+အကြာကြီး လက်မလွှတ်ချင်တဲ့ ဆုံးဖြတ်ချက်နဲ့…
+
+— ကိုကို`,
+`သဲသဲရေ…
+သဲသဲရဲ့အသံလေးက ကိုကို့ရဲ့ရင်ကို အေးချမ်းစေတယ်
+တစ်ခါတစ်လေ ပင်ပန်းနေတဲ့အချိန်မှာတောင်
+သဲသဲကို သတိရလိုက်တာနဲ့ ကိုကို့စိတ်က သက်သာသွားတယ်။
+
+— ကိုကို`,
+`သဲသဲရေ…
+သဲသဲအတွက်ဆို ကိုကိုက သေးသေးလေးအရာတွေကိုပါ ဂရုစိုက်ချင်တယ်။
+သဲသဲက မပြောချင်တဲ့နေ့မှာတောင် ကိုကိုက နားလည်ပေးချင်တယ်။
+
+— ကိုကို`,
+`သဲသဲရေ…
+ကိုကို့အတွက် သဲသဲက “လုံခြုံမှု” လိုပဲ။
+အကြာကြီးချစ်မယ်ဆိုတာက ကတိတစ်ခုပဲမဟုတ်ဘူး—
+နေ့တိုင်း ရွေးချယ်မယ့် အရာတစ်ခုပါ။
+
+— ကိုကို`,
+`သဲသဲရေ…
+ကိုကို့အိမ်မက်တွေက သဲသဲနဲ့ပဲ ပြည့်စုံတယ်။
+အတူတူ “သာမာန်နေ့တွေ” ကို လှအောင် ဖန်တီးချင်တယ်။
+
+— ကိုကို`,
+`သဲသဲရေ…
+ကိုကို တိတ်နေတဲ့အချိန်တိုင်း သဲသဲအကြောင်းပဲ စဉ်းစားနေတာဖြစ်နိုင်တယ်။
+ကိုကို့ favorite place က… သဲသဲနားမှာပဲ။
+
+— ကိုကို`,
+`သဲသဲရေ…
+သဲသဲကိုချစ်တာက အကြောင်းပြချက်လိုမလို မသိပေမယ့်
+ကိုကို့အတွက်တော့ သဲသဲဟာ “အကြောင်းပြချက်” တစ်ခုလုံးပဲ။
+
+— ကိုကို`
+    ];
+
+    const REASONS = [
+      "သဲသဲရဲ့အသံလေးက ကိုကို့စိတ်ကို အေးစေတယ်",
+      "သဲသဲရယ်တဲ့အခါ ကိုကို့နေ့တစ်နေ့လုံး ပြည့်စုံသွားတယ်",
+      "သဲသဲက လူတွေထဲမှာ ချစ်စရာအကောင်းဆုံးအပြုံးပိုင်ရှင်",
+      "သဲသဲနားလည်ပေးတတ်တာကြောင့် ကိုကိုပိုကောင်းလာတယ်",
+      "သဲသဲနဲ့နေရင် ကိုကို့စိတ်အေးပြီး စိတ်ချမ်းသာတယ်",
+      "သဲသဲက ကိုကို့အတွက် အိမ်လိုပဲ—လုံခြုံမှု",
+      "သဲသဲရှိလို့ ကိုကို့နေ့တွေ သာမာန်မဟုတ်တော့ဘူး"
+    ];
+
+    const DATE_IDEAS = [
+      "ညနေခင်း လမ်းလျှောက်ပြီး Thai Teaသောက်ကြမယ်",
+      "အေးအေးဆေးဆေး cafe သွားပြီး စကားများများပြောကြမယ်",
+      "sunset ကြည့်ပြီး music နားထောင်ကြမယ်",
+      "photo booth သွားပြီး အမှတ်တရလေးရိုက်ကြမယ်",
+      "movie night + snacks + သဲသဲ လက်လေးကိုကိုင်ထားမယ်",
+      "street food tour သွားပြီး တစ်ခုချင်းစီ လျှောက်စားကြမယ်",
+      "အတူတူ playlist တစ်ခုလုပ်ပြီး “our songs” လုပ်ကြမယ်"
+    ];
+
+    const COMPLIMENTS = [
+      "သဲသဲက တကယ်လှတယ်… ကိုကို့ရင်ကပြောတာ",
+      "သဲသဲရှိလို့ ကိုကို့နေ့တွေ သာမန်မဟုတ်တော့ဘူး",
+      "သဲသဲရဲ့ကြိုးစားမှုကို ကိုကိုအမြဲလေးစားတယ်",
+      "သဲသဲက အမြဲ စိတ်ချရတဲ့သူလေး",
+      "သဲသဲရဲ့အပြုံးက ကိုကို့အတွက် power ဖြစ်တယ်"
+    ];
+    const PROMISES = [
+      "သဲသဲစိတ်ညစ်တဲ့အချိန်တိုင်း ကိုကိုဘေးမှာရှိမယ်",
+      "သဲသဲကို မလျစ်လျူရှုဘူး — အမြဲဂရုစိုက်မယ်",
+      "သဲသဲရဲ့အိမ်မက်တွေကို ကိုကိုတကယ် support ပေးမယ်",
+      "ကိုကို့စကားထက် ကိုကို့အပြုအမူနဲ့ သက်သေပြမယ်",
+      "သဲသဲကို အကြာကြီး ချစ်ပေးမယ်"
+    ];
+    const SECRETS = [
+      "တစ်ခါတစ်လေ သဲသဲအကြောင်းတွေးရင်း ကိုကိုအလိုလိုပြုံးနေတတ်တယ်",
+      "သဲသဲ message လာရင် notification သံတောင် ချစ်စရာကောင်းသွားတယ်",
+      "သဲသဲနဲ့တွေ့မယ့်နေ့တွေကို ကိုကို စောင့်ရတာပျော်တယ်",
+      "သဲသဲကိုချစ်တာက habit မဟုတ်ဘူး — choice",
+      "ကိုကို့ favorite place က… သဲသဲနားမှာ"
+    ];
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function dayIndex7(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const day = d.getDate();
+      const start = Date.UTC(y, 0, 1);
+      const now = Date.UTC(y, m, day);
+      const doy = Math.floor((now - start) / 86400000) + 1;
+      return (doy - 1) % 7;
+    }
+
+    function applyDaily(){
+      const idx = dayIndex7();
+      $("sinceText").textContent = ANNI;
+      $("dayHint").textContent = `Today: Day ${idx+1} / 7`;
+
+      $("reason").textContent = REASONS[idx] ?? "—";
+      $("dateIdea").textContent = DATE_IDEAS[idx] ?? "—";
+      $("dailyMessage").innerHTML = escapeHtml(DAILY_MESSAGES[idx] ?? "—").replace(/\n/g,"<br>");
+      $("letterText").innerHTML = escapeHtml(LOVE_LETTERS[idx] ?? "—").replace(/\n/g,"<br>");
+    }
+
+    function updateTimer(){
+      const since = new Date(ANNI + "T00:00:00");
+      const now = new Date();
+      let diff = now - since;
+      const sign = diff < 0 ? -1 : 1;
+      diff = Math.abs(diff);
+
+      const minsTotal = Math.floor(diff/60000);
+      const hoursTotal = Math.floor(minsTotal/60);
+      const days = Math.floor(hoursTotal/24);
+      const remH = hoursTotal % 24;
+      const remM = minsTotal % 60;
+
+      $("timer").textContent = (sign >= 0)
+        ? `${days}d ${remH}h ${remM}m`
+        : `-${days}d ${remH}h ${remM}m`;
+    }
+
+    let toastT = null;
+    function showToast(msg){
+      const el = $("toast");
+      el.style.display = "block";
+      el.textContent = msg;
+      clearTimeout(toastT);
+      toastT = setTimeout(()=>{ el.style.display="none"; }, 2600);
+    }
+
+    function openOverlay(id){ $(id).classList.add("show"); }
+    function closeOverlay(id){ $(id).classList.remove("show"); }
+
+    $("openLetter").addEventListener("click", ()=> openOverlay("letterOverlay"));
+    $("closeLetter").addEventListener("click", ()=> closeOverlay("letterOverlay"));
+    $("letterOverlay").addEventListener("click", (e)=>{ if(e.target.id==="letterOverlay") closeOverlay("letterOverlay"); });
+
+    function showWelcome(){ openOverlay("welcomeOverlay"); }
+    function closeWelcome(){ closeOverlay("welcomeOverlay"); }
+    $("closeWelcome").addEventListener("click", closeWelcome);
+    $("welcomeOverlay").addEventListener("click", (e)=>{ if(e.target.id==="welcomeOverlay") closeWelcome(); });
+
+    function randFrom(list){
+      if(!Array.isArray(list) || list.length===0) return "—";
+      return list[Math.floor(Math.random()*list.length)];
+    }
+    $("complimentBtn").addEventListener("click", ()=> showToast(randFrom(COMPLIMENTS)));
+    $("promiseBtn").addEventListener("click", ()=> showToast(randFrom(PROMISES)));
+    $("secretBtn").addEventListener("click", ()=> showToast(randFrom(SECRETS)));
+
+    // Music
+    let musicOn = false;
+    $("musicBtn").addEventListener("click", async ()=>{
+      const audio = $("bgm");
+      try{
+        if(!musicOn){
+          await audio.play();
+          musicOn = true;
+          showToast("Playing 🎵");
+        }else{
+          audio.pause();
+          musicOn = false;
+          showToast("Paused ⏸");
+        }
+      }catch(e){
+        showToast("Autoplay blocked — tap again 🎵");
+      }
+    });
+
+    // =========================
+    // FRONT FX (burst hearts)
+    // =========================
+    const fx = $("fx");
+    const fxCtx = fx.getContext("2d");
+    let fxW=0, fxH=0;
+    const bursts = [];
+
+    function fxResize(){
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      fxW = fx.width = Math.floor(innerWidth * dpr);
+      fxH = fx.height = Math.floor(innerHeight * dpr);
+      fx.style.width = innerWidth+"px";
+      fx.style.height = innerHeight+"px";
+      fx.dpr = dpr;
+    }
+    window.addEventListener("resize", fxResize);
+    fxResize();
+
+    function heartPath(ctx,x,y,s){
+      ctx.beginPath();
+      const d = s;
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - d, y - d, x - 2*d, y + d/2, x, y + 2*d);
+      ctx.bezierCurveTo(x + 2*d, y + d/2, x + d, y - d, x, y);
+      ctx.closePath();
+    }
+
+    function burstHearts(n=24){
+      const dpr = fx.dpr || 1;
+      const cx = (innerWidth/2) * dpr;
+      const cy = (innerHeight*0.22) * dpr;
+      for(let i=0;i<n;i++){
+        const ang = Math.random()*Math.PI*2;
+        const sp = 1.0 + Math.random()*2.6;
+        const vx = Math.cos(ang)*sp;
+        const vy = Math.sin(ang)*sp - (1.2+Math.random()*1.8);
+        const s = (2.8 + Math.random()*5.2) * dpr;
+        const a = 0.70 + Math.random()*0.30;
+        bursts.push({x:cx,y:cy,vx,vy,s,a,life:1});
+      }
+    }
+
+    function fxTick(){
+      fxCtx.clearRect(0,0,fxW,fxH);
+      for(let i=bursts.length-1;i>=0;i--){
+        const h = bursts[i];
+        h.x += h.vx;
+        h.y += h.vy;
+        h.vy += 0.010 * (fx.dpr||1);
+        h.life -= 0.010;
+        if(h.life<=0){ bursts.splice(i,1); continue; }
+        fxCtx.save();
+        fxCtx.globalAlpha = h.a * Math.max(0, h.life);
+        fxCtx.fillStyle = "rgba(255,255,255,0.92)";
+        heartPath(fxCtx, h.x, h.y, h.s);
+        fxCtx.fill();
+        fxCtx.restore();
+      }
+      requestAnimationFrame(fxTick);
+    }
+    fxTick();
+
+    // =========================
+    // BACKGROUND HEARTS (smaller + lower opacity)
+    // =========================
+    const bg = $("bgHearts");
+    const bgCtx = bg.getContext("2d");
+    let bgW=0, bgH=0;
+    const bgHearts = [];
+
+    function bgResize(){
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      bgW = bg.width = Math.floor(innerWidth * dpr);
+      bgH = bg.height = Math.floor(innerHeight * dpr);
+      bg.style.width = innerWidth+"px";
+      bg.style.height = innerHeight+"px";
+      bg.dpr = dpr;
+    }
+    window.addEventListener("resize", bgResize);
+    bgResize();
+
+    function spawnBgHeart(){
+      const dpr = bg.dpr || 1;
+      const x = (Math.random()*innerWidth) * dpr;
+      const y = (innerHeight + 60) * dpr;
+
+      const vy = -(0.50 + Math.random()*0.85) * dpr;
+      const vx = (Math.random() - 0.5) * 0.16 * dpr;
+
+      const s  = (7 + Math.random()*13) * dpr;         /* ✅ smaller */
+      const a  = 0.035 + Math.random()*0.06;           /* ✅ ~1/3 opacity */
+      const wob = 0.6 + Math.random()*1.8;
+
+      bgHearts.push({x,y,vx,vy,s,a,t:Math.random()*100,wob});
+    }
+
+    // spawn rate (still smooth)
+    setInterval(()=> {
+      spawnBgHeart();
+      if(Math.random() < 0.65) spawnBgHeart();
+    }, 300);
+
+    function bgTick(){
+      bgCtx.clearRect(0,0,bgW,bgH);
+
+      for(let i=bgHearts.length-1;i>=0;i--){
+        const h = bgHearts[i];
+        h.t += 0.02;
+        h.x += h.vx + Math.sin(h.t) * h.wob;
+        h.y += h.vy;
+
+        if(h.y < -120){
+          bgHearts.splice(i,1);
+          continue;
+        }
+
+        bgCtx.save();
+        bgCtx.globalAlpha = h.a;
+        bgCtx.fillStyle = "rgba(255,255,255,0.95)";
+        heartPath(bgCtx, h.x, h.y, h.s);
+        bgCtx.fill();
+        bgCtx.restore();
+      }
+
+      requestAnimationFrame(bgTick);
+    }
+    bgTick();
+
+    // Surprise
+    $("surpriseBtn").addEventListener("click", ()=>{
+      burstHearts(42);
+      showToast("Surprise for you 💗");
+    });
+
+    // Welcome start
+    $("welcomeStart").addEventListener("click", async ()=>{
+      closeWelcome();
+      burstHearts(48);
+
+      const audio = $("bgm");
+      try{
+        await audio.play();
+        musicOn = true;
+        showToast("Playing 🎵");
+      }catch(e){
+        showToast("Music play မဖြစ်သေးဘူး 🎵");
+      }
+
+      setTimeout(()=> openOverlay("letterOverlay"), 350);
+    });
+
+    $("welcomeNoMusic").addEventListener("click", ()=>{
+      closeWelcome();
+      burstHearts(24);
+    });
+
+    // init
+    $("toTag").innerHTML = `To: <b>${TO}</b>`;
+    $("fromTag").innerHTML = `From: <b>${FROM}</b>`;
+    $("sinceText").textContent = ANNI;
+
+    applyDaily();
+    updateTimer();
+    setInterval(updateTimer, 1000*30);
+
+    let lastIdx = dayIndex7();
+    setInterval(()=>{
+      const idx = dayIndex7();
+      if(idx !== lastIdx){
+        lastIdx = idx;
+        applyDaily();
+      }
+    }, 300000);
+
+    window.addEventListener("load", ()=>{
+      showWelcome();
+    });
+  </script>
+</body>
+</html>
